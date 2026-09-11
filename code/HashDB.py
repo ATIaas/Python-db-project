@@ -1,8 +1,12 @@
 
+#Idk why i am doing a string return
+#Sue me
 def init():
+    lines = 1000000
     with open ('data.txt', 'w') as file:
-        for x in range(1000000):
+        for x in range(lines):
             file.write("\n")
+    return "Initiated text file with " + str(lines) + " lines"
 
 #These two could use another parameter for file
 def getlines():
@@ -25,9 +29,9 @@ def convert(data):
 def set(data):
     dataset = getlines()
     position = convert(data)
-    print("saved " + "\"" + data + "\"" + " in position:" + str(position))
     dataset[position] = data
     writelines(dataset)
+    return "saved " + "\"" + data + "\"" + " in position:" + str(position)
 
 def get(data):
     exists = False
@@ -39,7 +43,7 @@ def get(data):
 
     return position, exists
 
-init()
-set("ch")
+print(init())
+print(set("ch"))
 print(get("c"))
 print(get("ch"))
