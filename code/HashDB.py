@@ -1,0 +1,45 @@
+
+def init():
+    with open ('data.txt', 'w') as file:
+        for x in range(1000000):
+            file.write("\n")
+
+#These two could use another parameter for file
+def getlines():
+    with open ('data.txt', 'r') as file:
+        dataset = file.readlines()
+    return dataset
+
+def writelines(dataset):
+    with open ('data.txt', 'w') as file:
+        file = file.writelines(dataset)
+
+def convert(data):
+    position = ""
+    for c in data:
+        position = position + str(ord(c))
+    position = int(position)
+    return position
+
+#Position 0 is not really used
+def set(data):
+    dataset = getlines()
+    position = convert(data)
+    print("saved " + "\"" + data + "\"" + " in position:" + str(position))
+    dataset[position] = data
+    writelines(dataset)
+
+def get(data):
+    exists = False
+    position = convert(data)
+    dataset = getlines()
+
+    if dataset[position] == data + "\n":
+        exists = True
+
+    return position, exists
+
+init()
+set("ch")
+print(get("c"))
+print(get("ch"))
