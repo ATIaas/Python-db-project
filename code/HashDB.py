@@ -1,7 +1,3 @@
-
-#Idk why i am doing a string return
-#Sue me
-
 #This program uses the direct text file for operations
 #Instead of a giant array
 #Makes it easier to see
@@ -52,6 +48,7 @@ def delete(data):
     dataset = getlines()
     dataset[position] = "\n"
     writelines(dataset)
+    return "deleted " + "\"" + data + "\"" + " in position:" + str(position)
 
 print(init())
 print(set("ch"))
