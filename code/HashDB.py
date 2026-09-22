@@ -16,7 +16,7 @@ def getlines():
 
 def writelines(dataset):
     with open ('data.txt', 'w') as file:
-        file = file.writelines(dataset)
+        file.writelines(dataset)
 
 def convert(data):
     position = ""
@@ -43,7 +43,15 @@ def get(data):
 
     return position, exists
 
+def delete(data):
+    position = convert(data)
+    dataset = getlines()
+    dataset[position] = ""
+    writelines(dataset)
+
 print(init())
 print(set("ch"))
 print(get("c"))
+print(get("ch"))
+delete("ch")
 print(get("ch"))
