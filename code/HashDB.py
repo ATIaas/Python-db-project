@@ -42,20 +42,10 @@ def get(key):
     position = convert(key)
     dataset = getlines()
 
-    if dataset[position] == key + "\n":
-        exists = True
-
-    return position, exists
+    return dataset[position]
 
 def delete(data):
     position = convert(data)
     dataset = getlines()
     dataset[position] = "\n"
     writelines(dataset)
-
-print(init())
-print(set("ch", "ch"))
-print(get("c"))
-print(get("ch"))
-delete("ch")
-print(get("ch"))
