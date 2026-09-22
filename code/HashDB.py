@@ -1,6 +1,10 @@
 
 #Idk why i am doing a string return
 #Sue me
+
+#This program uses the direct text file for operations
+#Instead of a giant array
+#Makes it easier to see
 def init():
     lines = 1000000
     with open ('data.txt', 'w') as file:
@@ -46,7 +50,7 @@ def get(data):
 def delete(data):
     position = convert(data)
     dataset = getlines()
-    dataset[position] = ""
+    dataset[position] = "\n"
     writelines(dataset)
 
 print(init())
