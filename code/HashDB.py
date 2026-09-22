@@ -22,9 +22,9 @@ def writelines(dataset):
     with open ('data.txt', 'w') as file:
         file.writelines(dataset)
 
-def convert(data):
+def convert(key):
     position = ""
-    for c in data:
+    for c in key:
         position = position + str(ord(c))
     position = int(position)
     return position
@@ -44,8 +44,8 @@ def get(key):
 
     return dataset[position]
 
-def delete(data):
-    position = convert(data)
+def delete(key):
+    position = convert(key)
     dataset = getlines()
     dataset[position] = "\n"
     writelines(dataset)
