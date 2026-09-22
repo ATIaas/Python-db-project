@@ -1,3 +1,7 @@
+
+#Idk why i am doing a string return
+#Sue me
+
 #This program uses the direct text file for operations
 #Instead of a giant array
 #Makes it easier to see
@@ -26,19 +30,19 @@ def convert(data):
     return position
 
 #Position 0 is not really used
-def set(data):
+def set(key, data):
     dataset = getlines()
-    position = convert(data)
+    position = convert(key)
     dataset[position] = data
     writelines(dataset)
     return "saved " + "\"" + data + "\"" + " in position:" + str(position)
 
-def get(data):
+def get(key):
     exists = False
-    position = convert(data)
+    position = convert(key)
     dataset = getlines()
 
-    if dataset[position] == data + "\n":
+    if dataset[position] == key + "\n":
         exists = True
 
     return position, exists
@@ -48,10 +52,9 @@ def delete(data):
     dataset = getlines()
     dataset[position] = "\n"
     writelines(dataset)
-    return "deleted " + "\"" + data + "\"" + " in position:" + str(position)
 
 print(init())
-print(set("ch"))
+print(set("ch", "ch"))
 print(get("c"))
 print(get("ch"))
 delete("ch")
