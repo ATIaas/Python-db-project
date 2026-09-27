@@ -1,23 +1,30 @@
-#This program uses the direct text file for operations
-#Instead of a giant array
-#Makes it easier to see
-def init():
-    lines = 1000000
-    with open ('data.txt', 'w') as file:
-        for x in range(lines):
-            file.write("\n")
-    return "Initiated text file with " + str(lines) + " lines"
+# Change here if you want to use a different file for the database
+FILE = 'data.txt'
 
-#These two could use another parameter for file
+# Creates the data file if it doesn't exist, leaves existing data alone
+def init():
+    open (FILE, 'a').close()
+    return "Data file ready"
+
+# Reads the file and gives back a dictionary (position: data) skipping empty lines
 def getlines():
-    with open ('data.txt', 'r') as file:
-        dataset = file.readlines()
+    dataset = {}
+    with open (FILE, 'r') as file:
+        for line in file:
+            line = line.rstrip("\n")
+            if line != "":
+                position, data = line.split(":")
+                dataset[int(position)] = data
     return dataset
 
+# Writes the dictionary (in format: position: data) in the file (overwrite)
 def writelines(dataset):
-    with open ('data.txt', 'w') as file:
-        file.writelines(dataset)
+    with open (FILE, 'w') as file:
+        for position in dataset:
+            file.write(str(position) + ":" + dataset[position] + "\n")
+    return "Data file updated"
 
+# Converts a key into a position by concatenating the ASCII values of each character in the key
 def convert(key):
     position = ""
     for c in key:
@@ -25,7 +32,7 @@ def convert(key):
     position = int(position)
     return position
 
-#Position 0 is not really used
+# Saves data under the key's position (overwrites if something was already there)
 def set(key, data):
     dataset = getlines()
     position = convert(key)
@@ -33,15 +40,16 @@ def set(key, data):
     writelines(dataset)
     return "saved " + "\"" + data + "\"" + " in position:" + str(position)
 
+# Gets the data stored under the key's position
 def get(key):
     position = convert(key)
     dataset = getlines()
-
     return dataset[position]
 
+# Deletes the data stored under the key's position and overwrite the file (db)
 def delete(key):
     position = convert(key)
     dataset = getlines()
-    dataset[position] = "\n"
+    dataset.pop(position)
     writelines(dataset)
-    return "deleted data: " + key + " from position: " + str(position)
+    return "deleted data in position:" + str(position)
