@@ -9,3 +9,10 @@
 - Cubrir todo tipo de texto (chino, ruso, etc)
 - Deseable: añadir timestamps, quien añadio el dato y eso
 - Borrar definitivo, nada de soft deletes
+
+Cambios:
+
+2 y 7- Control de acceso
+3 - Mayor escalabilidad de datos
+5 y 9 - UTF32
+10 - Trazabilidad de los datos y operaciones
