@@ -1,0 +1,11 @@
+- Almacenar cadenas de texto (en una clave un valor) solo se guarda texto plano
+- Distintos departamentos usan una base de datos (cada uno la suya)
+- Miles de millones de datos (desde un excel)
+- Priorizar rapidez aun teniendo muchos datos
+- Uso de caracteres especiales
+- Dato de ejemplo: edad : 15
+- Le interesa el tener distintos permisos
+- El tamaño de los datos puede ser desde un caracter pequeño hasta algo encriptado
+- Cubrir todo tipo de texto (chino, ruso, etc)
+- Deseable: añadir timestamps, quien añadio el dato y eso
+- Borrar definitivo, nada de soft deletes
