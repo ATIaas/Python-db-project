@@ -29,7 +29,3 @@ def consolidate(FILE):
         for key, data in seen_keys.items():
             if data is not None:  # Solo escribe si no fue eliminado
                 file.write(key + ":" + data + "\n")
-
-    # Recarga los datos en memoria
-    getdata()
-    return "Database consolidated: " + str(len([v for v in seen_keys.values() if v is not None])) + " valid entries"
