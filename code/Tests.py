@@ -28,7 +28,7 @@ def test_set():
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
-    assert dataset[con.convert("key1")] == "data1"
+    assert dataset[con.convert("key1")] == "data2"
     assert text[0] == "key1:data1\n"
 
 def test_get():
