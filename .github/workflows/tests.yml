@@ -10,6 +10,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.13"
+          python-version: "3.14"
       - run: pip install -r code/requirements.txt
       - run: python code/Tests.py -c "import sys; print(sys.version)"
