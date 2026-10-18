@@ -4,7 +4,7 @@ import DicConvert as con
 def delete(key, dataset, FILE):
     position = con.convert(key)
     if dataset[position] == "":
-        return "Doesnt exist"
+        raise KeyError(key)
 
     dataset[position] = ""
 
