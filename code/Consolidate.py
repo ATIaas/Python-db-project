@@ -2,12 +2,12 @@
 # Rewrites the file with only the latest valid entries
 def consolidate(FILE):
     """
-    Elimina duplicados y ordenes de eliminacion del archivo
-    Mantiene solo la ultima version valida de cada clave
+    Removes duplicates and delete orders from the file
+    Keeps only the latest valid version of each key
     """
     seen_keys = {}
 
-    # Lee el archivo y mantiene el registro más reciente de cada clave
+    # Reads the file and keeps the most recent record of each key
     with open(FILE, 'r') as file:
         for line in file:
             line = line.rstrip("\n")
@@ -15,17 +15,17 @@ def consolidate(FILE):
                 continue
 
             if line[0] == '?':
-                # Es una orden de eliminacion
+                # It is a delete order
                 key = line.lstrip("?")
-                seen_keys[key] = None  # None indica que fue eliminado
+                seen_keys[key] = None  # None means it was deleted
             else:
-                # Es un par key:data
+                # It is a key:data pair
                 if ':' in line:
                     key, data = line.split(":", 1)
                     seen_keys[key] = data
 
-    # Reescribe el archivo con solo las entradas validas (no eliminadas)
+    # Rewrites the file with only the valid (non-deleted) entries
     with open(FILE, 'w') as file:
         for key, data in seen_keys.items():
-            if data is not None:  # Solo escribe si no fue eliminado
+            if data is not None:  # Only writes if it was not deleted
                 file.write(key + ":" + data + "\n")
