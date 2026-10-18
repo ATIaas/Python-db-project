@@ -23,10 +23,12 @@ def resetf():
 dataset = rd.getdata(FILE)
 
 def test_init():
+    """The dataset starts empty and the data file has no content"""
     assert dataset == []
     assert (open(FILE, 'r')).read() == ""
 
 def test_set():
+    """Setting a key stores it in memory and appends it to the file"""
 
     sg.set("key1", "data1", dataset, FILE)
 
@@ -39,6 +41,7 @@ def test_set():
     resetf()
 
 def test_get():
+    """Getting a key returns the data stored under it"""
     
     sg.set("key1", "data1", dataset, FILE)
     get = sg.get("key1", dataset)
@@ -48,6 +51,7 @@ def test_get():
     resetf()
 
 def test_delete():
+    """Deleting a key empties its position and appends a delete order to the file"""
         
     sg.set("key1", "data1", dataset, FILE)
     dl.delete("key1", dataset, FILE)
@@ -61,11 +65,13 @@ def test_delete():
     resetf()
 
 def test_delete_missing_key():
+    """Deleting a key that does not exist raises KeyError"""
 
     with pytest.raises(KeyError):
         dl.delete("nokey", dataset, FILE)
 
 def test_consolidate():
+    """Consolidating removes deleted keys and keeps the latest valid entries"""
     
     sg.set("key1", "data1", dataset, FILE)
     sg.set("key2", "data2", dataset, FILE)
