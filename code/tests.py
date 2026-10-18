@@ -24,8 +24,8 @@ dataset = rd.getdata(FILE)
 
 def test_init():
     """The dataset starts empty and the data file has no content"""
-    assert dataset == []
-    assert (open(FILE, 'r')).read() == ""
+    assert dataset == [], "The dataset should be empty"
+    assert (open(FILE, 'r')).read() == "", "The file should be empty"
 
 def test_set():
     """Setting a key stores it in memory and appends it to the file"""
@@ -35,8 +35,8 @@ def test_set():
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
-    assert dataset[con.convert("key1")] == "data1"
-    assert text[0] == "key1:data1\n"
+    assert dataset[con.convert("key1")] == "data1", "key1 should be stored in memory"
+    assert text[0] == "key1:data1\n", "The first line of the file should be key1:data1"
     
     resetf()
 
@@ -46,7 +46,7 @@ def test_get():
     sg.set("key1", "data1", dataset, FILE)
     get = sg.get("key1", dataset)
 
-    assert get == "data1"
+    assert get == "data1", "get should return data1"
     
     resetf()
 
@@ -59,8 +59,8 @@ def test_delete():
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
-    assert text[0] == "?key1\n"
-    assert dataset[con.convert("key1")] == ""
+    assert text[0] == "?key1\n", "The first line of the file should be the delete order for key1"
+    assert dataset[con.convert("key1")] == "", "The position of key1 should be empty"
     
     resetf()
 
@@ -82,6 +82,6 @@ def test_consolidate():
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
-    assert text[0] == "key2:data2\n"
+    assert text[0] == "key2:data2\n", "The first line of the file should be key2:data2"
     
     resetf()
