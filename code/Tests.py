@@ -60,6 +60,11 @@ def test_delete():
     
     resetf()
 
+def test_delete_missing_key():
+
+    with pytest.raises(KeyError):
+        dl.delete("nokey", dataset, FILE)
+
 def test_consolidate():
     
     sg.set("key1", "data1", dataset, FILE)
