@@ -1,11 +1,11 @@
 import pytest
 
-import Initialize
-import ReadDataset as rd
-import SetGet as sg
-import DicConvert as con
-import Delete as dl
-import Consolidate as cl
+import initialize
+import read_dataset as rd
+import set_get as sg
+import dic_convert as con
+import delete as dl
+import consolidate as cl
 
 #print(sg.set("key2", "data2", dataset, FILE))
 #print(sg.set("key3", "data3", dataset, FILE))
@@ -13,7 +13,7 @@ import Consolidate as cl
 #print(dataset)
 
 FILE = 'data.txt'
-Initialize.init(FILE)
+initialize.init(FILE)
 
 #Reset text file
 def resetf():

@@ -1,4 +1,4 @@
-import DicConvert as con
+import dic_convert as con
 
 # Wipes the dataset clean
 # Reads line by line, and executes the order in each line
