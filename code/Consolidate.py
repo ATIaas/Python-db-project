@@ -1,6 +1,6 @@
 # Consolidates the database by removing duplicates and delete orders
 # Rewrites the file with only the latest valid entries
-def consolidate(FILE):
+def consolidate(FILE: str) -> None:
     """
     Removes duplicates and delete orders from the file
     Keeps only the latest valid version of each key
