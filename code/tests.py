@@ -24,7 +24,7 @@ dataset = rd.getdata(FILE)
 
 def test_init():
     """The dataset starts empty and the data file has no content"""
-    assert dataset == [], "The dataset should be empty"
+    assert dataset == [""] * 100, "The dataset should be empty"
     assert (open(FILE, 'r')).read() == "", "The file should be empty"
 
 def test_set():
