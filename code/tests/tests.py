@@ -1,18 +1,13 @@
 import pytest
 
-import initialize
-import read_dataset as rd
-import set_get as sg
-import dic_convert as con
-import delete as dl
-import consolidate as cl
+from modules import (initialize,
+                     read_dataset as rd,
+                     set_get as sg,
+                     dic_convert as con,
+                     delete as dl,
+                     consolidate as cl)
 
-#print(sg.set("key2", "data2", dataset, FILE))
-#print(sg.set("key3", "data3", dataset, FILE))
-#print(dl.delete("key3", dataset, FILE))
-#print(dataset)
-
-FILE = 'data.txt'
+FILE = 'testdata.txt'
 initialize.init(FILE)
 
 #Reset text file
