@@ -1,6 +1,6 @@
 import pytest
 
-from code.modules import (initialize,
+from _code.modules import (initialize,
                      read_dataset as rd,
                      set_get as sg,
                      dic_convert as con,

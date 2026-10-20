@@ -1,4 +1,4 @@
-from modules import dic_convert as con
+from _code.modules import dic_convert as con
 # Saves data under the key's position (overwrites if something was already there)
 # Both creates an entry in .txt and in memory
 def set(key, data, dataset, FILE):

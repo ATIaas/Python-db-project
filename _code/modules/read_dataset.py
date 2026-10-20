@@ -1,4 +1,4 @@
-from modules import dic_convert as con
+from _code.modules import dic_convert as con
 
 # Wipes the dataset clean
 # Reads line by line, and executes the order in each line

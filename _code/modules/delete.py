@@ -1,4 +1,4 @@
-from modules import dic_convert as con
+from _code.modules import dic_convert as con
 # Deletes the data stored under the key's position in memory
 # And adds delete order to .txt
 def delete(key, dataset, FILE):
