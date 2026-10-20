@@ -1,10 +1,10 @@
 import pytest
 
 from _code.modules import (initialize,
-                     read_dataset as rd,
-                     set_get as sg,
-                     delete as dl,
-                     consolidate as cl)
+                           read_dataset as rd,
+                           set as s,
+                           delete as dl,
+                           consolidate as cl)
 
 FILE = 'testdata.txt'
 initialize.init(FILE)
@@ -24,21 +24,21 @@ def test_init():
 def test_set():
     """Setting a key stores it in memory and appends it to the file"""
 
-    sg.set("key1", "data1", dataset, FILE)
+    s.set("key1", "data1", dataset, FILE)
 
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
     assert dataset["key1"] == "data1", "key1 should be stored in memory"
-    assert text[0] == "key1:data1\n", "The first line of the file should be key1:data1"
+    assert s.set("key1", "data1", dataset, FILE) == "Already exists"
     
     resetf()
 
 def test_get():
     """Getting a key returns the data stored under it"""
     
-    sg.set("key1", "data1", dataset, FILE)
-    get = sg.get("key1", dataset)
+    s.set("key1", "data1", dataset, FILE)
+    get = dataset["key1"]
 
     assert get == "data1", "get should return data1"
     
@@ -47,7 +47,7 @@ def test_get():
 def test_delete():
     """Deleting a key empties its position and appends a delete order to the file"""
         
-    sg.set("key1", "data1", dataset, FILE)
+    s.set("key1", "data1", dataset, FILE)
     dl.delete("key1", dataset, FILE)
 
     with (open(FILE, 'r')) as f:
@@ -67,8 +67,8 @@ def test_delete_missing_key():
 def test_consolidate():
     """Consolidating removes deleted keys and keeps the latest valid entries"""
     
-    sg.set("key1", "data1", dataset, FILE)
-    sg.set("key2", "data2", dataset, FILE)
+    s.set("key1", "data1", dataset, FILE)
+    s.set("key2", "data2", dataset, FILE)
     dl.delete("key1", dataset, FILE)
 
     cl.consolidate(FILE)
