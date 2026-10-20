@@ -11,5 +11,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.14"
-      - run: pip install -r code/requirements.txt
-      - run: pytest code/tests.py -c "import sys; print(sys.version)"
+      - run: pip install -r _code/tests/requirements.txt
+      - run: pytest _code/tests/tests.py -c "import sys; print(sys.version)"
