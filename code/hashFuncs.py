@@ -1,10 +1,8 @@
 import io
 
-#dependency
-from utf32HashDB import ACCEPTED_ENCODINGS
 
 
-class hashingFunction:
+class hashFunc:
     """
     This is a simple base class that will define the bare minimal functionality,
     basically a guideline of calls that will be used in the general code
@@ -12,11 +10,7 @@ class hashingFunction:
     :Suffix => HASH
     """
 
-    def __init__(self,encoding: str, **kwargs):
-        self.encoding = encoding
-        if encoding not in ACCEPTED_ENCODINGS:
-            raise ValueError("Encoding is not supported")
-
+    def __init__(self, **kwargs): pass ;
     #placeholder
     def encode(self, key: str) -> int:
         position = ""
@@ -25,3 +19,5 @@ class hashingFunction:
             position = position + str(ord(c))
         position = int(position)
         return position
+
+

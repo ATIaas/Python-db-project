@@ -1,8 +1,14 @@
 import io
 
+
+from threading import Thread, Lock
+
 from loadedDB import loadedDB
 
-from hashFuncs import hashingFunction
+from hashFuncs import hashFunc
+
+from lineAction import lineAction
+
 
 ACCEPTED_ENCODINGS = ['utf-32', 'utf-16', 'utf-8', 'ASCII']
 
@@ -14,13 +20,16 @@ class utf32FileHashDB:
     :Suffix: FHDB
     """
 
+
+
+
     def __init__(self, filename: str, **kwargs):
         """
         :param filename: the name of the associated file
         :keyword dict_size: the size of the internal map/dictionary for DB in memory store : int = 100
         :keyword encoding: the encoding of the file : str = 'utf-32',CONSTRAINED by ACCEPTED_ENCODINGS
         :keyword concurrent_threads: the number of concurrent threads for async file reading and consolidation : int = 10
-        :keyword thread_buffer: the buffer size to be interpreted by each thread in bytes : int = 4000, CONSTRAIN at least 1024
+        :keyword thread_buffer: the buffer size to be interpreted by each thread in characters : int = 1024, CONSTRAIN at least 256
         """
         self.filename = filename
 
@@ -34,9 +43,9 @@ class utf32FileHashDB:
             raise TypeError('the file encoding system is not recognized')\
 
 
-        self.hashing_func = kwargs.get('hashing_func', hashingFunction(self.encoding))
-        if type(self.hashing_func) != hashingFunction :
-            raise TypeError('the hashing function is not derived from the base class hashingFunction')
+        self.hashing_func = kwargs.get('hashing_func', hashFunc())
+        if type(self.hashing_func) != hashFunc :
+            raise TypeError('the hashing function is not derived from the base class hashFunc')
 
 
         self.concurrent_threads = kwargs.get('concurrent_threads', 10)
@@ -44,18 +53,102 @@ class utf32FileHashDB:
             raise TypeError('the number of concurrent threads must be an integer')
 
 
-        self.thread_buffer = kwargs.get('thread_buffer', 4000)
+        self.thread_buffer = kwargs.get('thread_buffer', 1024)
         if type(self.thread_buffer) != int :
             raise TypeError('the buffer size to be interpreted by each thread must be an integer')
-        elif self.thread_buffer < 1024 :
+        elif self.thread_buffer < 256 :
             # trust me less than this and we are just putting the memory to work
-            raise ValueError('a buffer of less than 1024 bytes is a waste of threading')
+            raise ValueError('a buffer of less than 256 characters is a waste of threading')
 
 
         self.loadedDB = loadedDB(self.dict_size)
 
         self.__file_data_load()
 
+
+# General functions
+    def __line_parser(self, line: str)->lineAction:
+        line = line.rstrip("\n")
+        if line == "":
+            return lineAction() # dud return
+
+        if line[0] == '?':
+            line = line.lstrip("?")
+            ret = lineAction.create_unset(self.hashing_func(line),line)
+
+        else:
+            split_point = line.find(":")
+
+            if split_point != -1:
+                key = line[0:split_point]
+                value = line[split_point + 1:]
+                ret = lineAction.create_set(self.hashing_func(key),value, key)
+                return ret
+
+        return lineAction() # dud return
+
+
+
+    def __thread_parser(self, chunk: str)->list[lineAction]:
+        """
+        :param chunk: the chunk to be parsed
+        :return: is a list of items of the order class
+        """
+        ret = []
+        counter = 0
+        split_point = chunk.find("/n")
+
+        while split_point != -1:
+            if counter == 0:
+                data = chunk[:split_point]
+                chunk = chunk[split_point + 1:]
+                if chunk != "":
+                    ret.append(lineAction.create_first(data,chunk == ""))
+            else:
+                data = chunk[:split_point]
+                chunk = chunk[split_point + 1:]
+                potential = self.__line_parser(data)
+                if potential.order != "":
+                    ret.append(potential)
+
+            counter += 1
+            split_point = chunk.find("/n")
+
+        if chunk != "":
+            ret.append(lineAction.create_last(chunk))
+
+        return ret
+
+
+    __chunk_counter = 0
+    __current_file_io = None # set to open(filename, 'r', encoding self.encoding)
+    def __thread_chunk_getter(self)->dict:
+        """
+        REQUIREMENT to initialize the self.__chunk_counter at 0 before calling this
+        REQUIREMENT to initialize the self.__current_file_io as a file with the reading permission
+
+        :returns {"n":chunk_num, "data":chunk}
+        REMINDER Python does not read EOF's so make sure to end threads when they get a empty string.
+        """
+
+        ret:dict = {}
+        ret["n"] = self.__chunk_counter
+        ret["data"] = self.__current_file_io.read(self.thread_buffer)
+        self.__chunk_counter += 1
+        return ret
+
+
+
+
+# Data Loading
+
+
+
+
+
+    def __dataload_thread_func(self): pass ;
+
+    def __dataload_thread_orchestrator(self): pass;
 
     def __file_data_load(self):
         pass
