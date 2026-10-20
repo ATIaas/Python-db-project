@@ -3,7 +3,6 @@ import pytest
 from _code.modules import (initialize,
                      read_dataset as rd,
                      set_get as sg,
-                     dic_convert as con,
                      delete as dl,
                      consolidate as cl)
 
@@ -19,7 +18,7 @@ dataset = rd.getdata(FILE)
 
 def test_init():
     """The dataset starts empty and the data file has no content"""
-    assert dataset == [""] * 100, "The dataset should be empty"
+    assert dataset == {}, "The dataset should be empty"
     assert (open(FILE, 'r')).read() == "", "The file should be empty"
 
 def test_set():
@@ -30,7 +29,7 @@ def test_set():
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
-    assert dataset[con.convert("key1")] == "data1", "key1 should be stored in memory"
+    assert dataset["key1"] == "data1", "key1 should be stored in memory"
     assert text[0] == "key1:data1\n", "The first line of the file should be key1:data1"
     
     resetf()
@@ -54,8 +53,8 @@ def test_delete():
     with (open(FILE, 'r')) as f:
         text = f.readlines()
 
-    assert text[0] == "?key1\n", "The first line of the file should be the delete order for key1"
-    assert dataset[con.convert("key1")] == "", "The position of key1 should be empty"
+    assert text[-1] == "?key1\n", "The first line of the file should be the delete order for key1"
+    assert "key1" not in dataset, "The position of key1 should be empty"
     
     resetf()
 
