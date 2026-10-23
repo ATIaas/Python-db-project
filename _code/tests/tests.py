@@ -1,20 +1,18 @@
 import pytest
 
 from _code.modules import (initialize,
-                           read_dataset as rd,
                            set as s,
                            delete as dl,
                            consolidate as cl)
 
 FILE = 'testdata.txt'
-initialize.init(FILE)
 
 #Reset text file
 def resetf():
     with (open(FILE, 'w')) as f:
         f.write("")
 
-dataset = rd.getdata(FILE)
+dataset = initialize.start_dataset(FILE)
 
 def test_init():
     """The dataset starts empty and the data file has no content"""
