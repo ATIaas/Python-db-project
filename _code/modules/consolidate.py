@@ -1,31 +1,23 @@
-# Consolidates the database by removing duplicates and delete orders
-# Rewrites the file with only the latest valid entries
-def consolidate(FILE: str) -> None:
-    """
-    Removes duplicates and delete orders from the file
-    Keeps only the latest valid version of each key
-    """
-    seen_keys = {}
-
-    # Reads the file and keeps the most recent record of each key
-    with open(FILE, 'r') as file:
-        for line in file:
+def load_latest(path: str) -> dict:
+    """Reads the log and returns the latest value of each live key."""
+    db = {}
+    with open(path, "r") as f:
+        for line in f:
             line = line.rstrip("\n")
-            if not line:
-                continue
+            if line.startswith("?"):
+                db.pop(line[1:], None)      # delete order
+            elif ":" in line:
+                key, data = line.split(":", 1)
+                db[key] = data              # newer value overwrites older
+    return db
 
-            if line[0] == '?':
-                # It is a delete order
-                key = line.lstrip("?")
-                seen_keys[key] = None  # None means it was deleted
-            else:
-                # It is a key:data pair
-                if ':' in line:
-                    key, data = line.split(":", 1)
-                    seen_keys[key] = data
 
-    # Rewrites the file with only the valid (non-deleted) entries
-    with open(FILE, 'w') as file:
-        for key, data in seen_keys.items():
-            if data is not None:  # Only writes if it was not deleted
-                file.write(key + ":" + data + "\n")
+def write_all(path: str, db: dict) -> None:
+    """Overwrites the file with the given key:data pairs."""
+    with open(path, "w") as f:
+        for key, data in db.items():
+            f.write(f"{key}:{data}\n")
+
+
+def consolidate(path: str) -> None:
+    write_all(path, load_latest(path))
