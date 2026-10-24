@@ -5,17 +5,14 @@ from _code.modules import (initialize,
                            delete as dl,
                            consolidate as cl)
 
-
 @pytest.fixture
 def FILE(tmp_path):
     """Path of the data file, in a temporary directory"""
     return str(tmp_path / "testdata.txt")
 
-
 @pytest.fixture
 def dataset(FILE):
     return initialize.start_dataset(FILE)
-
 
 def test_init(FILE, dataset):
     """The dataset starts empty and the data file has no content"""
@@ -72,3 +69,33 @@ def test_consolidate(FILE, dataset):
         text = f.readlines()
 
     assert text[0] == "key2:data2\n", "The first line of the file should be key2:data2"
+
+def test_set_key_with_colon(FILE, dataset):
+    """Setting a key that contains ':' raises ValueError"""
+
+    with pytest.raises(ValueError):
+        s.set("a:b", "data1", dataset, FILE)
+
+def test_set_key_starting_with_question_mark(FILE, dataset):
+    """Setting a key that starts with '?' raises ValueError"""
+
+    with pytest.raises(ValueError):
+        s.set("?key1", "data1", dataset, FILE)
+
+def test_set_empty_key(FILE, dataset):
+    """Setting an empty key raises ValueError"""
+
+    with pytest.raises(ValueError):
+        s.set("", "data1", dataset, FILE)
+
+def test_set_key_with_line_break(FILE, dataset):
+    """Setting a key that contains a line break raises ValueError"""
+
+    with pytest.raises(ValueError):
+        s.set("key\n1", "data1", dataset, FILE)
+
+def test_set_data_with_line_break(FILE, dataset):
+    """Setting data that contains a line break raises ValueError"""
+
+    with pytest.raises(ValueError):
+        s.set("key1", "da\nta1", dataset, FILE)
