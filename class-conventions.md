@@ -56,8 +56,8 @@
 ---
 For this purpose some ground rules will be set.
 
-1. Class Names will not start with uppercase letters
-   - They are used for key word highlights or camel case
+1. Class Names will be done with CapWords or PascalCase
+   - Other notable uses of capitalizations are acronyms/KEYpoints for example TEST
 
 3. Class Names will not contain underscores.
 
@@ -68,7 +68,7 @@ For this purpose some ground rules will be set.
 
 | Right | Wrong |
 | ------ | ------ |
-| loadedDB | VirtualDB |
+|  VirtualDB | loadedDB |
 | useractionDBhandler | db_user_petition_handler |
 | utf32FileHashDB | fileHashDBParserStandardUTF32 |
 
@@ -88,9 +88,9 @@ Suffixes will be used to label daughter classes that can completely replace thei
 -  Alternative versions.
 
 ##### for example a testing dummy class for the class with suffix EXTM, will look something like this.
-"dummy__EXTM"
+"Dummy__EXTM"
 or
-"dummy__EXTM_unitTST2".
+"Dummy__EXTM_unitTST2".
 
 
 #### Each base class created should have a 3-5 alphanumeric Code to associate it for inheritance purposes with some rules.
