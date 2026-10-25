@@ -17,15 +17,15 @@ class loadedDB:
     # Public functions
 
     def get(self, key: int):
-        key = key % self.size
+
         return self.table[key]
 
     # Protected functions
 
     def _remove(self, key: int):
-        key = key % self.size
+
         self.table.pop(key)
 
     def _insert(self, key: int, value: str):
-        key = key % self.size
+
         self.table[key] = value

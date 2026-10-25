@@ -1,5 +1,7 @@
 import io
-
+import threading
+import multiprocessing as mp
+from platform import release
 
 from threading import Thread, Lock
 
@@ -26,21 +28,21 @@ class utf32FileHashDB:
     def __init__(self, filename: str, **kwargs):
         """
         :param filename: the name of the associated file
-        :keyword dict_size: the size of the internal map/dictionary for DB in memory store : int = 100
+        :keyword dict_size: the size of the internal map/dictionary for DB in memory store : int = 1000
         :keyword encoding: the encoding of the file : str = 'utf-32',CONSTRAINED by ACCEPTED_ENCODINGS
         :keyword concurrent_threads: the number of concurrent threads for async file reading and consolidation : int = 10
         :keyword thread_buffer: the buffer size to be interpreted by each thread in characters : int = 1024, CONSTRAIN at least 256
         """
         self.filename = filename
 
-        self.dict_size = kwargs.get('dict_size', 100)
+        self.dict_size = kwargs.get('dict_size', 1000)
         if type(self.dict_size) != int :
             raise TypeError('the size of the dictionary must be an integer')
 
 
         self.encoding = kwargs.get('encoding', 'utf-32')
         if type(self.encoding) != str and self.encoding not in ACCEPTED_ENCODINGS:
-            raise TypeError('the file encoding system is not recognized')\
+            raise TypeError('the file encoding system is not recognized')
 
 
         self.hashing_func = kwargs.get('hashing_func', hashFunc())
@@ -89,7 +91,7 @@ class utf32FileHashDB:
 
 
 
-    def __thread_parser(self, chunk: str)->list[lineAction]:
+    def __chunk_parser(self, chunk: str)->list[lineAction]:
         """
         :param chunk: the chunk to be parsed
         :return: is a list of items of the order class
@@ -130,12 +132,74 @@ class utf32FileHashDB:
         :returns {"n":chunk_num, "data":chunk}
         REMINDER Python does not read EOF's so make sure to end threads when they get a empty string.
         """
+        self.__file_cond.acquire()
 
-        ret:dict = {}
-        ret["n"] = self.__chunk_counter
-        ret["data"] = self.__current_file_io.read(self.thread_buffer)
+        ret:dict = { "n":self.__chunk_counter, "data":self.__current_file_io.read(self.thread_buffer) }
         self.__chunk_counter += 1
+
+
+        self.__file_cond.release()
+
+
+
         return ret
+
+
+
+    def __leading_tail_procesing(self, action:lineAction, chunk_n)->None:
+        if (chunk_n -1) in self.__completed_chunks:
+            if (chunk_n - 1) in self.__leading_tail.keys():
+                pass
+            else:
+                pass
+        else:
+            self.__leading_tail[chunk_n] = [action.value, "T" if action.is_full_chunk else  "F" ]
+
+
+
+    def __ending_tail_procesing(self, action:lineAction, chunk_n)->None:
+        pass
+
+
+
+    def __implement_lineAction(self, action:lineAction, chunk_n:int)->None:
+        match action.order:
+            case "first":
+                self.__leading_tail_procesing(action, chunk_n)
+            case "last":
+                self.__ending_tail_procesing(action, chunk_n)
+            case _:
+                key = self.hashing_func(action.key)
+                if not (key in self.__actions_taken.keys() and self.__actions_taken[
+                    key] > chunk_n):  # this is to not overide future actions
+                    match action.order:
+                        case "set":
+                            self.loadedDB._insert(key, action.value)
+                            self.__actions_taken[key] = chunk_n
+                        case "unset":
+                            self.loadedDB._delete(key)
+                            self.__actions_taken[key] = chunk_n
+
+
+
+    def __thread_action_maker(self, actions:list[lineAction], chunk_n:int )->None:
+
+        self.__actions_cond.acquire()
+
+        for action in actions:
+            self.__thread_action_maker(action, chunk_n);
+
+
+        self.__action_cond.release()
+
+
+
+        return
+
+
+
+
+
 
 
 
@@ -146,9 +210,34 @@ class utf32FileHashDB:
 
 
 
-    def __dataload_thread_func(self): pass ;
+    def __dataload_thread_func(self):
+        current_dict = self.__thread_chunk_getter();
+        while current_dict.get("data") != "":
 
-    def __dataload_thread_orchestrator(self): pass;
+            current_dict = self.__thread_chunk_getter()
+            actions = self.__chunk_parser(current_dict["data"])
+            self.__thread_action_maker(actions, current_dict["n"])
+
+
+
+
+    def __dataload_thread_orchestrator(self)->None:
+        self.__chunk_counter:int = 0
+        self.__current_file_io= open(self.filename, "r", encoding=self.encoding) # typing does not work
+        self.__actions_taken:dict[int, int] = {} #key, last chunk N to do action on it
+
+        # both of those will be in the form {chunk_num:{"data":... , "full_chunk":"1/0"<-basically bool}}
+        self.__leading_tail:dict[int,list[str]] = {}
+        self.__ending_tail: dict[int, list[str]] = {}
+
+        self.__completed_chunks:set[int] = set() #set of completed chunks
+
+        self.__file_cond = mp.Condition()
+        self.__action_cond = mp.Condition()
+
+
+
+
 
     def __file_data_load(self):
         pass

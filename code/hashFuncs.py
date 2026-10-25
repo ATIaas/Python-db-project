@@ -10,7 +10,8 @@ class hashFunc:
     :Suffix => HASH
     """
 
-    def __init__(self, **kwargs): pass ;
+    def __init__(self, module, **kwargs):
+        self.module = module
     #placeholder
     def encode(self, key: str) -> int:
         position = ""
@@ -18,6 +19,6 @@ class hashFunc:
             # ord seems to be ify with UTF, but it works and this is a placeholder function
             position = position + str(ord(c))
         position = int(position)
-        return position
+        return position % self.module
 
 
