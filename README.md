@@ -15,7 +15,7 @@ We built it to practice good habits on GitHub and when programming: issues, bran
 ## Project structure
 
 ```
-code/
+src/
   initialize.py    creates the data file
   set_get.py       set and get
   delete.py        delete
@@ -30,8 +30,8 @@ team_history/      notes from the team meetings
 ## Running the tests
 
 ```
-pip install -r code/requirements.txt
-cd code
+pip install -r src/requirements.txt
+cd src
 pytest tests.py
 ```
 
