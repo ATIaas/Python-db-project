@@ -1,5 +1,8 @@
 # This is a subset of functions defined for the class BaseDBClass
 
+# Should probably make a key and value validation function
+
+
 def set(S, key:str, data:str) -> str:
 
     if key == "":
