@@ -5,16 +5,14 @@ def start_dataset(FILE):
     # Wipes the dataset clean
     # Reads line by line, and executes the order in each line
     # Either key:data or delete data in key (?xxx)
-    dataset = {}
-    with open(FILE, 'r') as file:
-        for line in file:
+    """Reads the log and returns the latest value of each live key."""
+    db = {}
+    with open(FILE, "r") as f:
+        for line in f:
             line = line.rstrip("\n")
-            if line[0] == '?':
-                line = line.lstrip("?")
-                key = line
-                del dataset[key]
-            else:
-                key, data = line.split(":")
-                dataset[key] = data
-
-    return dataset
+            if line.startswith("?"):
+                db.pop(line[1:], None)  # delete order
+            elif ":" in line:
+                key, data = line.split(":", 1)
+                db[key] = data  # newer value overwrites older
+    return db

@@ -1,22 +1,7 @@
 import os
 import tempfile
 
-
-def load_latest(path: str) -> dict:
-    """Reads the log and returns the latest value of each live key."""
-    db = {}
-    with open(path, "r") as f:
-        for line in f:
-            line = line.rstrip("\n")
-            if line.startswith("?"):
-                db.pop(line[1:], None)      # delete order
-            elif ":" in line:
-                key, data = line.split(":", 1)
-                db[key] = data              # newer value overwrites older
-    return db
-
-
-def write_all(path: str, db: dict) -> None:
+def consolidate(path: str, db: dict) -> None:
     """Replaces the file atomically with the given key:data pairs."""
     dir_ = os.path.dirname(os.path.abspath(path))
     fd, tmp = tempfile.mkstemp(dir=dir_, prefix=".consolidate-", suffix=".tmp")
@@ -39,7 +24,3 @@ def write_all(path: str, db: dict) -> None:
         except FileNotFoundError:
             pass
         raise
-
-
-def consolidate(path: str) -> None:
-    write_all(path, load_latest(path))
