@@ -2,6 +2,7 @@ import pytest
 
 from _code.modules import (initialize,
                            set as s,
+                           get as g,        # NUEVO
                            delete as dl,
                            consolidate as cl)
 
@@ -32,15 +33,21 @@ def test_set(FILE, dataset):
 
 def test_get(FILE, dataset):
     """Getting a key returns the data stored under it"""
-    
+
     s.set("key1", "data1", dataset, FILE)
-    get = dataset["key1"]
+    get = g.get("key1", dataset)            # CAMBIADO: antes dataset["key1"]
 
     assert get == "data1", "get should return data1"
 
+def test_get_missing_key(dataset):          # NUEVO
+    """Getting a key that does not exist raises KeyError"""
+
+    with pytest.raises(KeyError):
+        g.get("nokey", dataset)
+
 def test_delete(FILE, dataset):
     """Deleting a key empties its position and appends a delete order to the file"""
-        
+
     s.set("key1", "data1", dataset, FILE)
     dl.delete("key1", dataset, FILE)
 
@@ -58,7 +65,7 @@ def test_delete_missing_key(FILE, dataset):
 
 def test_consolidate(FILE, dataset):
     """Consolidating removes deleted keys and keeps the latest valid entries"""
-    
+
     s.set("key1", "data1", dataset, FILE)
     s.set("key2", "data2", dataset, FILE)
     dl.delete("key1", dataset, FILE)
