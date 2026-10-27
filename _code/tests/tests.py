@@ -63,7 +63,7 @@ def test_consolidate(FILE, dataset):
     s.set("key2", "data2", dataset, FILE)
     dl.delete("key1", dataset, FILE)
 
-    cl.consolidate(FILE)
+    cl.consolidate(FILE, dataset)
 
     with (open(FILE, 'r')) as f:
         text = f.readlines()
