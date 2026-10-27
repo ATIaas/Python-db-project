@@ -1,7 +1,9 @@
 # .github/workflows/pruebas.yml
 name: Push Base Tests
 
-on: [push]
+on:
+  push:
+  pull_request: 
 
 jobs:
   tests:
