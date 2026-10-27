@@ -3,19 +3,10 @@
 # Should probably make a key and value validation function
 
 
+
 def set(S, key:str, data:str) -> str:
 
-    if key == "":
-        raise ValueError("key cannot be empty")
-
-    if ":" in key:
-        raise ValueError("key cannot contain \":\"")
-
-    if key.startswith("?"):
-        raise ValueError("key cannot start with \"?\"")
-
-    if "\n" in key or "\n" in data:
-        raise ValueError("key and data cannot contain line breaks")
+    S._validate_pair(key, data) ;
 
     key = S._hash_func.encrypt(key)
 
@@ -31,34 +22,14 @@ def set(S, key:str, data:str) -> str:
 
 
 def get(S, key:str) -> str:
-    if key == "":
-        raise ValueError("key cannot be empty")
-
-    if ":" in key:
-        raise ValueError("key cannot contain \":\"")
-
-    if key.startswith("?"):
-        raise ValueError("key cannot start with \"?\"")
-
-    if "\n" in key:
-        raise ValueError("key and data cannot contain line breaks")
+    S._validate_key(key) ;
 
     key = S._hash_func.encrypt(key)
     return S._dictDB.get(key,"Key_not_found!")
 
 
 def delete(S, key:str) -> str:
-    if key == "":
-        raise ValueError("key cannot be empty")
-
-    if ":" in key:
-        raise ValueError("key cannot contain \":\"")
-
-    if key.startswith("?"):
-        raise ValueError("key cannot start with \"?\"")
-
-    if "\n" in key:
-        raise ValueError("key and data cannot contain line breaks")
+    S._validate_key(key) ;
 
     key = S._hash_func.encrypt(key)
 

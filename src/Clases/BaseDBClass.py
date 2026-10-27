@@ -90,6 +90,33 @@ class BaseDBClass:
                     key, data = line.split(":")
                     self._dictDB[key] = data
 
+    #-------------------------------------------------------------
+
+    def _validate_key(self, key:str)->None:
+        if key == "":
+            raise ValueError("key cannot be empty")
+
+        if ":" in key:
+            raise ValueError("key cannot contain \":\"")
+
+        if key.startswith("?"):
+            raise ValueError("key cannot start with \"?\"")
+
+        if "\n" in key:
+            raise ValueError("key and data cannot contain line breaks")
+
+
+    def _validate_value(self, value:str)->None:
+        if value == "":
+            raise ValueError("value cannot be empty")
+        if "\n" in value:
+            raise ValueError("key and data cannot contain line breaks")
+
+
+    def _validate_pair(self, key:str, value:str)->None:
+        self._validate_key(key)
+        self._validate_value(value)
+
 
 
     #-------------------------------------------------------------
