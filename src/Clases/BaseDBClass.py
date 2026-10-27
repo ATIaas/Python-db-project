@@ -1,8 +1,8 @@
-from _code.Clases.BaseHashFunc import BaseHashClass
+from src.Clases.BaseHashFunc import BaseHashClass
 
 # modular function creation
-from _code.Clases.BaseDBClass_modules.basic_interaction import set, get, delete
-from _code.Clases.BaseDBClass_modules.consolidate import consolidate
+from src.Clases.BaseDBClass_modules.basic_interaction import set, get, delete
+from src.Clases.BaseDBClass_modules.consolidate import consolidate
 
 
 
