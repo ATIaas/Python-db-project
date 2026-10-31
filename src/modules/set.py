@@ -1,7 +1,7 @@
 # Saves data under the key's position (overwrites if something was already there)
 # Both creates an entry in .txt and in memory
 # Raises ValueError if key or data would corrupt the log
-def set(key, data, dataset, FILE):
+def set(key: str, data: str, dataset: dict[str, str], FILE: str) -> str:
     if key == "":
         raise ValueError("key cannot be empty")
     if ":" in key:
