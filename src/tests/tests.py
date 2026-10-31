@@ -7,34 +7,34 @@ from src.modules import (initialize,
                            consolidate as cl)
 
 @pytest.fixture
-def FILE(tmp_path):
+def path(tmp_path):
     """Path of the data file, in a temporary directory"""
     return str(tmp_path / "testdata.txt")
 
 @pytest.fixture
-def dataset(FILE):
-    return initialize.start_dataset(FILE)
+def dataset(path):
+    return initialize.start_dataset(path)
 
-def test_init(FILE, dataset):
+def test_init(path, dataset):
     """The dataset starts empty and the data file has no content"""
     assert dataset == {}, "The dataset should be empty"
-    assert (open(FILE, 'r')).read() == "", "The file should be empty"
+    assert (open(path, 'r')).read() == "", "The file should be empty"
 
-def test_set(FILE, dataset):
+def test_set(path, dataset):
     """Setting a key stores it in memory and appends it to the file"""
 
-    s.set("key1", "data1", dataset, FILE)
+    s.set("key1", "data1", dataset, path)
 
-    with (open(FILE, 'r')) as f:
+    with (open(path, 'r')) as f:
         text = f.readlines()
 
     assert dataset["key1"] == "data1", "key1 should be stored in memory"
-    assert s.set("key1", "data1", dataset, FILE) == "Already exists"
+    assert s.set("key1", "data1", dataset, path) == "Already exists"
 
-def test_get(FILE, dataset):
+def test_get(path, dataset):
     """Getting a key returns the data stored under it"""
 
-    s.set("key1", "data1", dataset, FILE)
+    s.set("key1", "data1", dataset, path)
     get = g.get("key1", dataset)            # CAMBIADO: antes dataset["key1"]
 
     assert get == "data1", "get should return data1"
@@ -45,64 +45,64 @@ def test_get_missing_key(dataset):          # NUEVO
     with pytest.raises(KeyError):
         g.get("nokey", dataset)
 
-def test_delete(FILE, dataset):
+def test_delete(path, dataset):
     """Deleting a key empties its position and appends a delete order to the file"""
 
-    s.set("key1", "data1", dataset, FILE)
-    dl.delete("key1", dataset, FILE)
+    s.set("key1", "data1", dataset, path)
+    dl.delete("key1", dataset, path)
 
-    with (open(FILE, 'r')) as f:
+    with (open(path, 'r')) as f:
         text = f.readlines()
 
     assert text[-1] == "?key1\n", "The first line of the file should be the delete order for key1"
     assert "key1" not in dataset, "The position of key1 should be empty"
 
-def test_delete_missing_key(FILE, dataset):
+def test_delete_missing_key(path, dataset):
     """Deleting a key that does not exist raises KeyError"""
 
     with pytest.raises(KeyError):
-        dl.delete("nokey", dataset, FILE)
+        dl.delete("nokey", dataset, path)
 
-def test_consolidate(FILE, dataset):
+def test_consolidate(path, dataset):
     """Consolidating removes deleted keys and keeps the latest valid entries"""
 
-    s.set("key1", "data1", dataset, FILE)
-    s.set("key2", "data2", dataset, FILE)
-    dl.delete("key1", dataset, FILE)
+    s.set("key1", "data1", dataset, path)
+    s.set("key2", "data2", dataset, path)
+    dl.delete("key1", dataset, path)
 
-    cl.consolidate(FILE, dataset)
+    cl.consolidate(path, dataset)
 
-    with (open(FILE, 'r')) as f:
+    with (open(path, 'r')) as f:
         text = f.readlines()
 
     assert text[0] == "key2:data2\n", "The first line of the file should be key2:data2"
 
-def test_set_key_with_colon(FILE, dataset):
+def test_set_key_with_colon(path, dataset):
     """Setting a key that contains ':' raises ValueError"""
 
     with pytest.raises(ValueError):
-        s.set("a:b", "data1", dataset, FILE)
+        s.set("a:b", "data1", dataset, path)
 
-def test_set_key_starting_with_question_mark(FILE, dataset):
+def test_set_key_starting_with_question_mark(path, dataset):
     """Setting a key that starts with '?' raises ValueError"""
 
     with pytest.raises(ValueError):
-        s.set("?key1", "data1", dataset, FILE)
+        s.set("?key1", "data1", dataset, path)
 
-def test_set_empty_key(FILE, dataset):
+def test_set_empty_key(path, dataset):
     """Setting an empty key raises ValueError"""
 
     with pytest.raises(ValueError):
-        s.set("", "data1", dataset, FILE)
+        s.set("", "data1", dataset, path)
 
-def test_set_key_with_line_break(FILE, dataset):
+def test_set_key_with_line_break(path, dataset):
     """Setting a key that contains a line break raises ValueError"""
 
     with pytest.raises(ValueError):
-        s.set("key\n1", "data1", dataset, FILE)
+        s.set("key\n1", "data1", dataset, path)
 
-def test_set_data_with_line_break(FILE, dataset):
+def test_set_data_with_line_break(path, dataset):
     """Setting data that contains a line break raises ValueError"""
 
     with pytest.raises(ValueError):
-        s.set("key1", "da\nta1", dataset, FILE)
+        s.set("key1", "da\nta1", dataset, path)
