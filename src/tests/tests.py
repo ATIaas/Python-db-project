@@ -4,7 +4,8 @@ from src.modules import (initialize,
                            set as s,
                            get as g,        # NUEVO
                            delete as dl,
-                           consolidate as cl)
+                           consolidate as cl,
+                           parse as p)
 
 @pytest.fixture
 def path(tmp_path):
@@ -106,3 +107,44 @@ def test_set_data_with_line_break(path, dataset):
 
     with pytest.raises(ValueError):
         s.set("key1", "da\nta1", dataset, path)
+
+def test_parse_set_line():
+    """Parsing a key:data line saves the data under the key"""
+
+    db: dict[str, str] = {}
+    p.parse("key1:data1\n", db)
+
+    assert db == {"key1": "data1"}, "key1 should be saved with data1"
+
+def test_parse_data_with_colon():
+    """Parsing splits only on the first ':' so the data can contain ':'"""
+
+    db: dict[str, str] = {}
+    p.parse("key1:da:ta1\n", db)
+
+    assert db == {"key1": "da:ta1"}, "The ':' should be kept in the data"
+
+def test_parse_delete_line():
+    """Parsing a delete order removes the key"""
+
+    db: dict[str, str] = {"key1": "data1"}
+    p.parse("?key1\n", db)
+
+    assert db == {}, "key1 should be deleted"
+
+def test_parse_invalid_line():
+    """Parsing a line without ':' or '?' does nothing"""
+
+    db: dict[str, str] = {}
+    p.parse("\n", db)
+    p.parse("key1\n", db)
+
+    assert db == {}, "Invalid lines should be ignored"
+
+def test_init_reads_log(path):
+    """Starting the dataset from a log keeps the latest value of each key and skips deleted keys"""
+
+    with open(path, 'w') as f:
+        f.write("key1:data1\nkey2:data2\nkey1:data3\n?key2\n\n")
+
+    assert initialize.start_dataset(path) == {"key1": "data3"}, "Only key1 with its latest data should be loaded"
