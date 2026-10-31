@@ -3,7 +3,7 @@ import tempfile
 
 def consolidate(path: str, db: dict[str, str]) -> None:
     """Replaces the file atomically with the given key:data pairs."""
-    dir_ = os.path.dirname(os.path.abspath(path))
+    dir_: str = os.path.dirname(os.path.abspath(path))
     fd, tmp = tempfile.mkstemp(dir=dir_, prefix=".consolidate-", suffix=".tmp")
     try:
         with os.fdopen(fd, "w") as f:
