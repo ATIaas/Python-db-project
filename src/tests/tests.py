@@ -108,13 +108,17 @@ def test_consolidate(path, dataset):
 
     assert text == ["key2:data2\n"], "The file should only have key2:data2"
 
-def test_set_invalid_input(path, dataset):
+@pytest.mark.parametrize("key, data", [
+    ("a:b", "data1"),
+    ("?key1", "data1"),
+    ("", "data1"),
+    ("key1", "da\nta1"),
+])
+def test_set_invalid_input(path, dataset, key, data):
     """Setting an invalid key or data raises ValueError and writes nothing"""
 
     with pytest.raises(ValueError):
-        s.set("a:b", "data1", dataset, path)
-    with pytest.raises(ValueError):
-        s.set("key1", "da\nta1", dataset, path)
+        s.set(key, data, dataset, path)
 
     with open(path, 'r') as f:
         text = f.read()
@@ -122,38 +126,21 @@ def test_set_invalid_input(path, dataset):
     assert dataset == {}, "Nothing should be saved in memory"
     assert text == "", "Nothing should be written to the file"
 
-def test_parse_set_line():
-    """Parsing a key:data line saves the data under the key"""
+@pytest.mark.parametrize("line, db, expected", [
+    ("key1:data1\n", {}, {"key1": "data1"}),
+    ("key1:da:ta1\n", {}, {"key1": "da:ta1"}),
+    ("key1:data2\n", {"key1": "data1"}, {"key1": "data2"}),
+    ("?key1\n", {"key1": "data1"}, {}),
+    ("?key1\n", {}, {}),
+    ("\n", {}, {}),
+    ("key1\n", {}, {}),
+])
+def test_parse(line, db, expected):
+    """Parsing a line of the log applies it to db, invalid lines are ignored"""
 
-    db: dict[str, str] = {}
-    p.parse("key1:data1\n", db)
+    p.parse(line, db)
 
-    assert db == {"key1": "data1"}, "key1 should be saved with data1"
-
-def test_parse_data_with_colon():
-    """Parsing splits only on the first ':' so the data can contain ':'"""
-
-    db: dict[str, str] = {}
-    p.parse("key1:da:ta1\n", db)
-
-    assert db == {"key1": "da:ta1"}, "The ':' should be kept in the data"
-
-def test_parse_delete_line():
-    """Parsing a delete order removes the key"""
-
-    db: dict[str, str] = {"key1": "data1"}
-    p.parse("?key1\n", db)
-
-    assert db == {}, "key1 should be deleted"
-
-def test_parse_invalid_line():
-    """Parsing a line without ':' or '?' does nothing"""
-
-    db: dict[str, str] = {}
-    p.parse("\n", db)
-    p.parse("key1\n", db)
-
-    assert db == {}, "Invalid lines should be ignored"
+    assert db == expected, "db should have the expected content"
 
 def test_init_reads_log(path):
     """Starting the dataset from a log keeps the latest value of each key and skips deleted keys"""
@@ -163,32 +150,39 @@ def test_init_reads_log(path):
 
     assert initialize.start_dataset(path) == {"key1": "data3"}, "Only key1 with its latest data should be loaded"
 
-def test_set_line():
+@pytest.mark.parametrize("key, data, line", [
+    ("key1", "data1", "key1:data1\n"),
+    ("key1", "da:ta1", "key1:da:ta1\n"),
+    ("key1", "", "key1:\n"),
+])
+def test_set_line(key, data, line):
     """The set line of the log is key:data"""
 
-    assert ll.set_line("key1", "data1") == "key1:data1\n", "The set line should be key1:data1"
+    assert ll.set_line(key, data) == line, "The set line should be key:data"
 
 def test_delete_line():
     """The delete line of the log is ?key"""
 
     assert ll.delete_line("key1") == "?key1\n", "The delete line should be ?key1"
 
-def test_validate_key_valid():
+@pytest.mark.parametrize("key", ["key1", "key 1", "k?y1", "城市"])
+def test_validate_key_valid(key):
     """Validating a valid key does not raise"""
 
-    assert v.validate_key("key1") is None, "key1 should be a valid key"
+    assert v.validate_key(key) is None, "The key should be valid"
 
-def test_validate_key_invalid():
+@pytest.mark.parametrize("key", ["", "a:b", "?key1", "key\n1"])
+def test_validate_key_invalid(key):
     """Validating a key that would corrupt the log raises ValueError"""
 
-    for key in ["", "a:b", "?key1", "key\n1"]:
-        with pytest.raises(ValueError):
-            v.validate_key(key)
+    with pytest.raises(ValueError):
+        v.validate_key(key)
 
-def test_validate_data_valid():
-    """Validating data with ':' or '?' does not raise"""
+@pytest.mark.parametrize("data", ["data1", "da:ta1", "?data1", "", "Москва"])
+def test_validate_data_valid(data):
+    """Validating data with ':', '?' or no characters does not raise"""
 
-    assert v.validate_data("da:ta?1") is None, "da:ta?1 should be valid data"
+    assert v.validate_data(data) is None, "The data should be valid"
 
 def test_validate_data_invalid():
     """Validating data with a line break raises ValueError"""
