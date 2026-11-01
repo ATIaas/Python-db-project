@@ -1,3 +1,6 @@
+import os
+import tempfile
+
 import pytest
 
 from src.modules import (initialize,
@@ -10,12 +13,14 @@ from src.modules import (initialize,
                            validate as v)
 
 @pytest.fixture
-def path(tmp_path):
+def path():
     """Path of the data file, in a temporary directory"""
-    return str(tmp_path / "testdata.txt")
+    with tempfile.TemporaryDirectory() as tmp:
+        yield os.path.join(tmp, "testdata.txt")
 
 @pytest.fixture
 def dataset(path):
+    """Dataset loaded from the data file"""
     return initialize.start_dataset(path)
 
 def test_init(path, dataset):
