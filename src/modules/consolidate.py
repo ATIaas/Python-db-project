@@ -1,6 +1,8 @@
 import os
 import tempfile
 
+from .log_line import set_line
+
 def consolidate(path: str, db: dict[str, str]) -> None:
     """Replaces the file atomically with the given key:data pairs."""
     dir_: str = os.path.dirname(os.path.abspath(path))
@@ -8,7 +10,7 @@ def consolidate(path: str, db: dict[str, str]) -> None:
     try:
         with os.fdopen(fd, "w") as f:
             for key, data in db.items():
-                f.write(f"{key}:{data}\n")
+                f.write(set_line(key, data))
             f.flush()
             os.fsync(f.fileno())            # make sure the bytes reached the disk
 
