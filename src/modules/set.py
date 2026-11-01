@@ -1,17 +1,12 @@
 from .log_line import set_line
+from .validate import validate_key, validate_data
 
 # Saves data under the key's position (overwrites if something was already there)
 # Both creates an entry in .txt and in memory
 # Raises ValueError if key or data would corrupt the log
 def set(key: str, data: str, dataset: dict[str, str], path: str) -> str:
-    if key == "":
-        raise ValueError("key cannot be empty")
-    if ":" in key:
-        raise ValueError("key cannot contain \":\"")
-    if key.startswith("?"):
-        raise ValueError("key cannot start with \"?\"")
-    if "\n" in key or "\n" in data:
-        raise ValueError("key and data cannot contain line breaks")
+    validate_key(key)
+    validate_data(data)
 
     if key in dataset:
         if dataset[key] == data:

@@ -6,7 +6,8 @@ from src.modules import (initialize,
                            delete as dl,
                            consolidate as cl,
                            parse as p,
-                           log_line as ll)
+                           log_line as ll,
+                           validate as v)
 
 @pytest.fixture
 def path(tmp_path):
@@ -79,35 +80,19 @@ def test_consolidate(path, dataset):
 
     assert text[0] == "key2:data2\n", "The first line of the file should be key2:data2"
 
-def test_set_key_with_colon(path, dataset):
-    """Setting a key that contains ':' raises ValueError"""
+def test_set_invalid_input(path, dataset):
+    """Setting an invalid key or data raises ValueError and writes nothing"""
 
     with pytest.raises(ValueError):
         s.set("a:b", "data1", dataset, path)
-
-def test_set_key_starting_with_question_mark(path, dataset):
-    """Setting a key that starts with '?' raises ValueError"""
-
-    with pytest.raises(ValueError):
-        s.set("?key1", "data1", dataset, path)
-
-def test_set_empty_key(path, dataset):
-    """Setting an empty key raises ValueError"""
-
-    with pytest.raises(ValueError):
-        s.set("", "data1", dataset, path)
-
-def test_set_key_with_line_break(path, dataset):
-    """Setting a key that contains a line break raises ValueError"""
-
-    with pytest.raises(ValueError):
-        s.set("key\n1", "data1", dataset, path)
-
-def test_set_data_with_line_break(path, dataset):
-    """Setting data that contains a line break raises ValueError"""
-
     with pytest.raises(ValueError):
         s.set("key1", "da\nta1", dataset, path)
+
+    with open(path, 'r') as f:
+        text = f.read()
+
+    assert dataset == {}, "Nothing should be saved in memory"
+    assert text == "", "Nothing should be written to the file"
 
 def test_parse_set_line():
     """Parsing a key:data line saves the data under the key"""
@@ -159,3 +144,26 @@ def test_delete_line():
     """The delete line of the log is ?key"""
 
     assert ll.delete_line("key1") == "?key1\n", "The delete line should be ?key1"
+
+def test_validate_key_valid():
+    """Validating a valid key does not raise"""
+
+    assert v.validate_key("key1") is None, "key1 should be a valid key"
+
+def test_validate_key_invalid():
+    """Validating a key that would corrupt the log raises ValueError"""
+
+    for key in ["", "a:b", "?key1", "key\n1"]:
+        with pytest.raises(ValueError):
+            v.validate_key(key)
+
+def test_validate_data_valid():
+    """Validating data with ':' or '?' does not raise"""
+
+    assert v.validate_data("da:ta?1") is None, "da:ta?1 should be valid data"
+
+def test_validate_data_invalid():
+    """Validating data with a line break raises ValueError"""
+
+    with pytest.raises(ValueError):
+        v.validate_data("da\nta1")
