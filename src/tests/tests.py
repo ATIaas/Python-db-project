@@ -25,8 +25,12 @@ def dataset(path):
 
 def test_init(path, dataset):
     """The dataset starts empty and the data file has no content"""
+
+    with open(path, 'r') as f:
+        text = f.read()
+
     assert dataset == {}, "The dataset should be empty"
-    assert (open(path, 'r')).read() == "", "The file should be empty"
+    assert text == "", "The file should be empty"
 
 def test_set(path, dataset):
     """Setting a key stores it in memory and appends it to the file"""
@@ -37,7 +41,8 @@ def test_set(path, dataset):
         text = f.readlines()
 
     assert dataset["key1"] == "data1", "key1 should be stored in memory"
-    assert s.set("key1", "data1", dataset, path) == "Already exists"
+    assert text == ["key1:data1\n"], "The file should have key1:data1"
+    assert s.set("key1", "data1", dataset, path) == "Already exists", "Setting the same data again should not save it"
 
 def test_get(path, dataset):
     """Getting a key returns the data stored under it"""
@@ -54,7 +59,7 @@ def test_get_missing_key(dataset):
         g.get("nokey", dataset)
 
 def test_delete(path, dataset):
-    """Deleting a key empties its position and appends a delete order to the file"""
+    """Deleting a key removes it from memory and appends a delete order to the file"""
 
     s.set("key1", "data1", dataset, path)
     dl.delete("key1", dataset, path)
@@ -62,8 +67,8 @@ def test_delete(path, dataset):
     with (open(path, 'r')) as f:
         text = f.readlines()
 
-    assert text[-1] == "?key1\n", "The first line of the file should be the delete order for key1"
-    assert "key1" not in dataset, "The position of key1 should be empty"
+    assert text[-1] == "?key1\n", "The last line of the file should be the delete order for key1"
+    assert "key1" not in dataset, "key1 should not be in memory"
 
 def test_delete_missing_key(path, dataset):
     """Deleting a key that does not exist raises KeyError"""
@@ -83,7 +88,7 @@ def test_consolidate(path, dataset):
     with (open(path, 'r')) as f:
         text = f.readlines()
 
-    assert text[0] == "key2:data2\n", "The first line of the file should be key2:data2"
+    assert text == ["key2:data2\n"], "The file should only have key2:data2"
 
 def test_set_invalid_input(path, dataset):
     """Setting an invalid key or data raises ValueError and writes nothing"""
