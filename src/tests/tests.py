@@ -44,6 +44,15 @@ def test_set(path, dataset):
     assert text == ["key1:data1\n"], "The file should have key1:data1"
     assert s.set("key1", "data1", dataset, path) == "Already exists", "Setting the same data again should not save it"
 
+def test_set_overwrite(path, dataset):
+    """Setting a key that already exists with other data keeps the new data, also after reloading"""
+
+    s.set("key1", "data1", dataset, path)
+    s.set("key1", "data2", dataset, path)
+
+    assert dataset["key1"] == "data2", "key1 should have data2 in memory"
+    assert initialize.start_dataset(path)["key1"] == "data2", "key1 should have data2 after reloading"
+
 def test_get(path, dataset):
     """Getting a key returns the data stored under it"""
 
@@ -57,6 +66,15 @@ def test_get_missing_key(dataset):
 
     with pytest.raises(KeyError):
         g.get("nokey", dataset)
+
+def test_get_deleted_key(path, dataset):
+    """Getting a key that was deleted raises KeyError"""
+
+    s.set("key1", "data1", dataset, path)
+    dl.delete("key1", dataset, path)
+
+    with pytest.raises(KeyError):
+        g.get("key1", dataset)
 
 def test_delete(path, dataset):
     """Deleting a key removes it from memory and appends a delete order to the file"""
