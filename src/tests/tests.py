@@ -5,7 +5,8 @@ from src.modules import (initialize,
                            get as g,
                            delete as dl,
                            consolidate as cl,
-                           parse as p)
+                           parse as p,
+                           log_line as ll)
 
 @pytest.fixture
 def path(tmp_path):
@@ -148,3 +149,13 @@ def test_init_reads_log(path):
         f.write("key1:data1\nkey2:data2\nkey1:data3\n?key2\n\n")
 
     assert initialize.start_dataset(path) == {"key1": "data3"}, "Only key1 with its latest data should be loaded"
+
+def test_set_line():
+    """The set line of the log is key:data"""
+
+    assert ll.set_line("key1", "data1") == "key1:data1\n", "The set line should be key1:data1"
+
+def test_delete_line():
+    """The delete line of the log is ?key"""
+
+    assert ll.delete_line("key1") == "?key1\n", "The delete line should be ?key1"
