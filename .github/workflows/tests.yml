@@ -15,4 +15,4 @@ jobs:
           python-version: "3.14"
       - run: pip install -r src/tests/requirements.txt
       - run: mypy --strict src/modules
-      - run: pytest src/tests/tests.py -c "import sys; print(sys.version)"
+      - run: pytest src/tests
