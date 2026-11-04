@@ -1,41 +1,41 @@
-
-class SpaceError(Exception):
+class DBError(Exception):
+    def __init__(self, message:str = "Something went wrong with the database", code:str = "DB") -> None:
+        self.message:str = message
+        self.code:str = code
+        super().__init__(message)
+        
+class SpaceError(DBError):
     def __init__(self) -> None:
-        self.message = "Not enough space in memory for file"
-        self.code = "SPACE"
-        super().__init__(self.message)
+        message:str = "Not enough space in memory for file"
+        code:str = "SPACE"
+        super().__init__(message, code)
 
-class TSpaceError(Exception):
+class TSpaceError(DBError):
     def __init__(self) -> None:
-        self.message = "Not enough space in memory for temp file"
-        self.code = "TSPACE"
-        super().__init__(self.message)
+        message:str = "Not enough space in memory for temp file"
+        code:str = "TSPACE"
+        super().__init__(message, code)
 
-class FileError(Exception):
+class FileError(DBError):
     def __init__(self) -> None:
-        self.message = "File not found or not readable"
-        self.code = "FILE"
-        super().__init__(self.message)
+        message:str = "File not found or not readable"
+        code:str = "FILE"
+        super().__init__(message, code)
 
 
-class AccessError(Exception):
+class AccessError(DBError):
     def __init__(self) -> None:
-        self.message = "Unable to access file"
-        self.code = "ACCESS"
-        super().__init__(self.message)
+        message:str = "Unable to access file"
+        code:str = "ACCESS"
+        super().__init__(message, code)
 
 
-class DBKeyError(Exception):
+class DBKeyError(DBError):
     def __init__(self, message:str = "DB key error") -> None:
-        self.message = message
-        self.code = "ACCESS"
-        super().__init__(self.message)
+        code:str = "KEY"
+        super().__init__(message, code)
 
-class DBValueError(Exception):
+class DBValueError(DBError):
     def __init__(self, message:str = "DB value error") -> None:
-        self.message = message
-        self.code = "ACCESS"
-        super().__init__(self.message)
-
-
-
+        code:str = "VALUE"
+        super().__init__(message, code)
