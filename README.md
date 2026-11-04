@@ -6,25 +6,43 @@ We built it to practice good habits on GitHub and when programming: issues, bran
 
 ## How it works
 
-- Each key is turned into a position (the ASCII values of its characters, modulo 100) in a list of 100 slots.
+- Import the main class (DBmain) and create an instance of the database (db = Database()).
+- Basic Python dict, with strict(key:str and value:str)
+- Each function of the main class returns a json with the result ({"ok": True or False, "Result": ""})
 - `set` saves `key:data` in memory and appends it to the file.
-- `delete` empties the slot and appends `?key` to the file.
-- `getdata` rebuilds the list by reading the file line by line.
-- `consolidate` rewrites the file keeping only the latest valid entry of each key.
+- `delete` empties the slot and appends `?key` (Tombstone line) to the file.
+- `get` fetches data based on key.
+- `consolidate` rewrites the file keeping only the latest valid entry of each key (Deals with tombstone lines).
+- Saves to a file. Default is "data" in the same directory, can be specified.
 
 ## Project structure
 
 ```
 src/
-  initialize.py    creates the data file
-  set_get.py       set and get
-  delete.py        delete
-  read_dataset.py  loads the file into memory
-  consolidate.py   removes duplicates and delete orders
-  dic_convert.py   key to position
-  tests.py         pytest tests
-backlog.md         client requirements and planned changes
-team_history/      notes from the team meetings
+    modules/
+        consolidate.py
+        delete.py
+        get.py
+        initialize.py
+        log_line.py
+        parse.py
+        set.py
+        validate.py
+    tests/
+        e2e/
+            test_database.py
+        unit/
+            test_consolidate.py
+            test_delete.py
+            test_get.py
+            test_initialize.py
+            test_log_line.py
+            test_parse.py
+            test_set.py
+            test_validate.py
+        conftest.py
+        requirements.txt
+    DBmain.py   Primary class that unifies all modules
 ```
 
 ## Running the tests
