@@ -6,9 +6,9 @@ We built it to practice good habits on GitHub and when programming: issues, bran
 
 ## How it works
 
-- Import the main class (DBmain) and create an instance of the database (db = Database()).
+- Import the main class (DBmain) and create an instance of the database (`db = Database()`).
 - Basic Python dict, with strict(key:str and value:str)
-- Each function of the main class returns a json with the result ({"ok": True or False, "Result": ""})
+- Each function of the main class returns a json with the result (`{"ok": True or False, "Result": ""}`)
 - `set` saves `key:data` in memory and appends it to the file.
 - `delete` empties the slot and appends `?key` (Tombstone line) to the file.
 - `get` fetches data based on key.
