@@ -1,5 +1,7 @@
 import pytest
 
+from src.modules.exceptions import DBKeyError
+
 from src.modules import (set as s,
                          delete as dl)
 
@@ -18,5 +20,5 @@ def test_delete(path, dataset):
 def test_delete_missing_key(path, dataset):
     """Deleting a key that does not exist raises KeyError"""
 
-    with pytest.raises(KeyError):
+    with pytest.raises(DBKeyError):
         dl.delete("nokey", dataset, path)

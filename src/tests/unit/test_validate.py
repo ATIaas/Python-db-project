@@ -1,5 +1,7 @@
 import pytest
 
+from src.modules.exceptions import DBKeyError, DBValueError
+
 from src.modules import validate as v
 
 @pytest.mark.parametrize("key", ["key1", "key 1", "k?y1", "城市"])
@@ -12,7 +14,7 @@ def test_validate_key_valid(key):
 def test_validate_key_invalid(key):
     """Validating a key that would corrupt the log raises ValueError"""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(DBKeyError):
         v.validate_key(key)
 
 @pytest.mark.parametrize("data", ["data1", "da:ta1", "?data1", "", "Москва"])
@@ -24,5 +26,5 @@ def test_validate_data_valid(data):
 def test_validate_data_invalid():
     """Validating data with a line break raises ValueError"""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(DBValueError):
         v.validate_data("da\nta1")
