@@ -3,6 +3,8 @@ import tempfile
 
 from .log_line import set_line
 
+#I think the tmp file size exception needs to be a separate issue
+
 def consolidate(path: str, db: dict[str, str]) -> None:
     """Replaces the file atomically with the given key:data pairs."""
     dir_: str = os.path.dirname(os.path.abspath(path))

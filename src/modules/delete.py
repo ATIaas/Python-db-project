@@ -1,5 +1,7 @@
 from .log_line import delete_line
 
+from .exceptions import DBKeyError
+
 # Deletes the data stored under the key's position in memory
 # And adds delete order to .txt
 def delete(key: str, dataset: dict[str, str], path: str) -> str:
@@ -10,4 +12,4 @@ def delete(key: str, dataset: dict[str, str], path: str) -> str:
             file.write(delete_line(key))
         return "deleted data with key:" + key
     else:
-        raise KeyError
+        raise DBKeyError()

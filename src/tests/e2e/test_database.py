@@ -1,5 +1,7 @@
 import pytest
 
+from src.modules.exceptions import DBKeyError
+
 from src.modules import (initialize,
                          set as s,
                          get as g,
@@ -20,5 +22,5 @@ def test_get_deleted_key(path, dataset):
     s.set("key1", "data1", dataset, path)
     dl.delete("key1", dataset, path)
 
-    with pytest.raises(KeyError):
+    with pytest.raises(DBKeyError):
         g.get("key1", dataset)

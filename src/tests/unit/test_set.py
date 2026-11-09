@@ -1,5 +1,7 @@
 import pytest
 
+from src.modules.exceptions import DBError
+
 from src.modules import set as s
 
 def test_set(path, dataset):
@@ -23,7 +25,7 @@ def test_set(path, dataset):
 def test_set_invalid_input(path, dataset, key, data):
     """Setting an invalid key or data raises ValueError and writes nothing"""
 
-    with pytest.raises(ValueError):
+    with pytest.raises(DBError):
         s.set(key, data, dataset, path)
 
     with open(path, 'r') as f:

@@ -1,5 +1,7 @@
 import pytest
 
+from src.modules.exceptions import DBKeyError
+
 from src.modules import (set as s,
                          get as g)
 
@@ -14,5 +16,5 @@ def test_get(path, dataset):
 def test_get_missing_key(dataset):
     """Getting a key that does not exist raises KeyError"""
 
-    with pytest.raises(KeyError):
+    with pytest.raises(DBKeyError):
         g.get("nokey", dataset)

@@ -8,7 +8,7 @@ def start_dataset(path: str) -> dict[str, str]:
         open(path, 'w').close()
     db: dict[str, str] = {}
     with open(path, "r") as f:
-        lines: list[str] = f.readlines()
+        lines: list[str] = f.readlines() # this can get out of hand with a large enough dataset
     for line in lines:
         parse(line, db)
     return db
