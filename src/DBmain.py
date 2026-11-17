@@ -4,8 +4,9 @@ from src.modules import get
 from src.modules import set
 from src.modules import delete
 
+
 class Database:
-    def __init__(self, path = "./data"):
+    def __init__(self, path="./data"):
         self.dataset = initialize.start_dataset(path)
         self.path = path
 
@@ -34,8 +35,8 @@ class Database:
         try:
             consolidate.consolidate(self.path, self.dataset)
             return {"ok": True, "Result": "Consolidated"}
-        except:
-            return {"ok": False, "Result": "Integrate this with the exceptions later"}
+        except Exception as e:
+            return {"ok": False, "Result": f"{type(e).__name__}: {e}"}
 
 
 defpath = "./data"
@@ -43,4 +44,4 @@ db = Database(defpath)
 print(db.set("donkey", "kong"))
 print(db.get("donkey"))
 print(db.delete("donkey"))
-#print(db.consolidate())
+print(db.consolidate())
