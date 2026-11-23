@@ -15,22 +15,22 @@ def createNew() -> str:
 
     lastnum = int(lastfile.split('-')[-1])
     lastnum += 1
-    lastnum = str(lastnum)
+    slastnum = str(lastnum)
 
-    while (len(lastnum) < 3):
-        lastnum = "0" + lastnum
+    while len(slastnum) < 3:
+        lastnum = "0" + slastnum
 
-    newfile = "seg-" + lastnum
+    newfile = "seg-" + slastnum
     open(newfile, 'a').close()
 
     return newfile
 
-def getSegment(index :dict[str, list], key :str) -> str:
+def getSegment(index :dict[str, list[str]], key :str) -> str:
     with open(index[key][0], "r") as f:
-        return f.readlines[index[key][1]]
+        return str(f.readlines()[int(index[key][1])])
 
 # Add tempfile protection
-def writeSegment(index :dict[str, list], key :str, value) -> dict[str, list]:
+def writeSegment(index :dict[str, list[str]], key :str, value :str) -> dict[str, list]:
     lastfile = os.listdir(spath)[-1]
 
     if countlines(lastfile) >= 3:
@@ -38,6 +38,6 @@ def writeSegment(index :dict[str, list], key :str, value) -> dict[str, list]:
 
     with open(lastfile, 'a') as f:
         f.write(value + '\n')
-    index[key] = [lastfile, countlines(lastfile)]
+    index[key] = [lastfile, str(countlines(lastfile))]
 
     return index
