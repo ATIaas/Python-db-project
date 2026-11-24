@@ -4,8 +4,9 @@ from src.modules import get
 from src.modules import set
 from src.modules import delete
 
+
 class Database:
-    def __init__(self, path = "./data"):
+    def __init__(self, path="./data"):
         self.dataset = initialize.start_dataset(path)
         self.path = path
 
